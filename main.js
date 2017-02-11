@@ -69,7 +69,7 @@ Answers: Answer here"`
 !trivia answer "answer here" <-- case insensitive.
                 */
                 if(params == null) {
-                    message.channel.sendMessage("Incorrect parameters: `!trivia <themes|questions|play|answer>`");
+                    message.channel.sendMessage("Incorrect parameters: `!trivia <themes|questions|answers|play|answer>`");
                     break;
                 }
                 
@@ -93,7 +93,7 @@ Answers: Answer here"`
                                 if(params[2] == null) {
                                     message.channel.sendMessage("Incorrect parameters: `!trivia themes add \"<name>\"`");
                                 }
-                                addTrivia(params[2]);
+                                addTheme(params[2]);
                                 break;
                             
                             case "remove":
@@ -109,7 +109,7 @@ Answers: Answer here"`
                                 }
                                 
                                 message.channel.sendMessage("I am now removing **" + data.trivia[themeIndex].name + "** from the list of themes.");
-                                data.trivia.splice(themeIndex, 1);
+                                removeTheme(themeIndex);
                                 break;
                             
                             case "show":
@@ -135,9 +135,37 @@ Answers: Answer here"`
                         }
                         switch(params[1]) {
                             case "add":
+                                if(params.length < 5) {
+                                    message.channel.sendMessage("Incorrect parameters: `!trivia questions add \"<theme name>\" \"<question>\" \"<answer 1>\" \"[answer 2]\"`");
+                                    break;
+                                }
+                                var _theme = params[2];
+                                _theme = findTheme(_theme);
+                                
+                                if(_theme == null) {
+                                    message.channel.sendMessage("The **" + params[2] + "** trivia theme does not exist.");
+                                    break;
+                                }
+                                
+                                var _question = params[3];
+                                var _answers = params.slice(4, params.length);
+                                addQuestion(_theme, _question, _answers);
                                 break;
                                 
                             case "remove":
+                                if(params.length < 4) {
+                                    message.channel.sendMessage("Incorrect parameters: `!trivia questions remove \"<theme name>\" <question index>`");
+                                    break;
+                                }
+                                var _theme = params[2];
+                                _theme = findTheme(_theme);
+                                
+                                if(_theme == null) {
+                                    message.channel.sendMessage("The **" + params[2] + "** trivia theme does not exist.");
+                                    break;
+                                }
+                                
+                                removeQuestion(_theme, params[3]);
                                 break;
                                 
                             case "show":
@@ -166,7 +194,7 @@ Answers: Answer here"`
                                     questionsList += (questionsList.length > 0 ? "\n" : "") + "`[" + ++questionIndex + "]` **" + q.question + "**" + (showAnswers ? "\n" + getAnswers(q.answers) : "" );
                                 });
                                 
-                                message.channel.sendMessage(themeParam.questions.length > 0 ? questionsList : "There are no questions for **" + param[2] + "**.");
+                                message.channel.sendMessage(themeParam.questions.length > 0 ? questionsList : "There are no questions for **" + params[2] + "**.");
                                 break;
                             
                             default:
@@ -214,7 +242,7 @@ Answers: Answer here"`
                 `<> = required, [] = optional, | = or.`\n\
     \n\
     **Basic Commands**\n\
-    - !trivia `Shows a list of other commands to try out (questions, play, and answer still in development).`\n\
+    - !trivia `Shows a list of other commands to try out (questions, answers, play, and answer still in development).`\n\
     - !test `Tests a new regex by printing all the parameters.`\n\
     - !hello `Sends a hello message back to the user.`\n\
     - !help `You goof.`\
@@ -238,9 +266,33 @@ Answers: Answer here"`
 });
 
 // Core Functions
-function addTrivia(triviaName) {
-    var triviaTemplate = { name: triviaName, questions: [] };
+function addTheme(themeName) {
+    var triviaTemplate = { name: themeName, questions: [] };
     data.trivia.push(triviaTemplate);
+}
+
+function removeTheme(theme) {
+    data.trivia.splice(theme, 1);
+}
+
+function findTheme(themeName) {
+    var foundTheme = null;
+    data.trivia.forEach(function(theme) {
+        if(theme.name == themeName) {
+            foundTheme = theme;
+            return;
+        }
+    });
+    
+    return foundTheme;
+}
+
+function addQuestion(theme, question, answers) {
+    theme.questions.push({ question: question, answers: answers });
+}
+
+function removeQuestion(theme, question, answer) {
+    theme.questions[question].answers.splice(answer, 1);
 }
 
 function getAnswers(triviaQuestion) {
