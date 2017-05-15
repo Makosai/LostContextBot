@@ -8,12 +8,17 @@ var debugging = false;
 const login = require("./login");
 const essentials = require("./essentials");
 const trivia = require("./trivia");
+const server = require("./server");
+
+var lastMessage = null;
 
 bot.on('ready', () => {
     console.log('I am ready!');
 });
 
 bot.on("message", function(message) {
+    lastMessage = message;
+    
     // Make sure the bot doesn't disconnect.
     // Reply to the server's ping with pong.
     if (message.content === 'ping') {
@@ -99,3 +104,8 @@ bot.on("message", function(message) {
 
 // Login
 login.run(bot);
+
+
+exports.test = function() { console.log("Client->Server comminication works!"); }
+exports.getLastMessage = function() { return lastMessage; }
+exports.trivia = trivia;
