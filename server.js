@@ -68,7 +68,7 @@ function handleRequest(request, response) {
         }
 
         if(fs.statSync(filename).isDirectory())
-            filename += 'index.html';
+            filename += '/index.html';
 
         fs.readFile(filename, "binary", function(err, file) {
             if(err) {        
