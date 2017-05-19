@@ -4,6 +4,8 @@ var url = require("url");
 var path = require("path");
 var fs = require("fs");
 
+var fun = false;
+
 const main = require("./main.js");
 
 const ROOT = "public/";
@@ -22,23 +24,47 @@ function handleGet(request, response) {
     
     var url_parts = url.parse(request.url, true);
     
-    /// Fix your shit, the paths are bad and messy
     if(url_parts.pathname.substr(0, "/trivia".length) === "/trivia") {
         var query = url_parts.query;
-        console.log(url_parts);
-        console.log(query);
         
         if(query.call == "trivia") {
-            if(query.param0 != undefined && query.param1 != undefined && query.param2 != undefined) {
-                console.log(1);
-                if(main.getLastMessage() == null) {
-                    console.log("Bot not properly initialized.");
-                    return;
-                }
-                
-                var params = [query.param0, query.param1, query.param2];
-                main.trivia.run(query.call, params, main.getLastMessage());
+            // Make sure we can reply with the bot.
+            if(main.getLastMessage() == null && main.getTriviaChannel() == undefined) {
+                console.log("Bot not properly initialized.");
+                return;
             }
+                
+            var params = [];
+            
+            // Populate the Params varaible.
+            for(key in query) {
+                if(key == "call") { continue; }
+                
+                params.push(key);
+            }
+            
+            main.trivia.run(query.call, params, main.getTriviaChannel());
+        }
+        
+        if(query.call == "sendMessage" && fun) {
+            // Make sure we can reply with the bot.
+            if(main.getLastMessage() == null && main.getTriviaChannel() == undefined) {
+                console.log("Bot not properly initialized.");
+                return;
+            }
+                
+            var params = [];
+            
+            // Populate the Params varaible.
+            for(key in query) {
+                if(key == "call") { continue; }
+                
+                params.push(key);
+            }
+            
+            params = params.join(' ');
+            
+            main.getTriviaChannel().sendMessage(params);
         }
     }
 }
@@ -83,12 +109,23 @@ function handleRequest(request, response) {
             if (contentType)
                 headers["Content-Type"] = contentType;
             response.writeHead(200, headers);
+            if(filename == getPath("/js/main.js")) {
+                var botData = `// External Data
+var triviaData = ` + main.trivia.getData() + `;
+
+`;
+                var position = 0; //file.indexOf("<head>") + "<head>".length;
+                file = [file.slice(0, position), botData, file.slice(position)].join('');   
+            }
+            
             response.write(file, "binary");
             response.end();
         });
     });
-    
-    //response.end('It Works!! Path Hit: ' + request.url);
+}
+
+function getPath(string) {
+    return path.join(process.cwd(), ROOT + string);
 }
 
 //Create a server

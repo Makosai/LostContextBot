@@ -11,13 +11,13 @@ const trivia = require("./trivia");
 const server = require("./server");
 
 var lastMessage = null;
+var triviaChannel = "277540526675460096";
 
 bot.on('ready', () => {
     console.log('I am ready!');
 });
 
 bot.on("message", function(message) {
-    lastMessage = message;
     
     // Make sure the bot doesn't disconnect.
     // Reply to the server's ping with pong.
@@ -28,6 +28,8 @@ bot.on("message", function(message) {
     // Make sure that only commands entered in #bot are registered.
     if (!(message.channel.name === "botstuff"))
         return;
+    
+    lastMessage = message;
 
     // ! command list
     if (message.content.charAt(0) === "!") {
@@ -43,7 +45,7 @@ bot.on("message", function(message) {
         switch (command) {
             
             case "trivia":
-                trivia.run(command, params, message);
+                trivia.run(command, params, message.channel);
                 break;
                 
             case "test":
@@ -108,4 +110,6 @@ login.run(bot);
 
 exports.test = function() { console.log("Client->Server comminication works!"); }
 exports.getLastMessage = function() { return lastMessage; }
+exports.getTriviaChannel = function() { return bot.channels.get(triviaChannel); }
 exports.trivia = trivia;
+exports.bot = bot;

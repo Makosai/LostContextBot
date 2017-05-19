@@ -22,7 +22,7 @@ var data = {
 };
 
 
-exports.run = function(command, params, message) {
+exports.run = function(command, params, channel) {
     switch(command) {
         case "trivia":
             /*
@@ -37,7 +37,7 @@ exports.run = function(command, params, message) {
     !trivia answer "answer here" <-- case insensitive.
             */
             if(params == null) {
-                message.channel.sendMessage("Incorrect parameters: `!trivia <themes|questions|answers|play|answer>`");
+                channel.sendMessage("Incorrect parameters: `!trivia <themes|questions|answers|play|answer>`");
                 break;
             }
 
@@ -49,31 +49,31 @@ exports.run = function(command, params, message) {
                 // Show all of the themes currently present in the data array.
                 case "themes":
                     if(params.length < 2) {
-                        message.channel.sendMessage("Incorrect parameters: `!trivia themes <add|remove|show>`");
+                        channel.sendMessage("Incorrect parameters: `!trivia themes <add|remove|show>`");
                         break;
                     }
 
                     switch(params[1]) {
                         case "add":
                             if(params[2] == null) {
-                                message.channel.sendMessage("Incorrect parameters: `!trivia themes add \"<name>\"`");
+                                channel.sendMessage("Incorrect parameters: `!trivia themes add \"<name>\"`");
                             }
                             addTheme(params[2]);
                             break;
 
                         case "remove":
                             if(params[2] == null) {
-                                message.channel.sendMessage("Incorrect parameters: `!trivia themes remove <index>`");
+                                channel.sendMessage("Incorrect parameters: `!trivia themes remove <index>`");
                                 break;
                             }
 
                             var themeIndex = params[2];
                             if(data.trivia.length <= themeIndex) {
-                                message.channel.sendMessage("Incorrect index: Run `!trivia themes show` to get an index");
+                                channel.sendMessage("Incorrect index: Run `!trivia themes show` to get an index");
                                 break;
                             }
 
-                            message.channel.sendMessage("I am now removing **" + data.trivia[themeIndex].name + "** from the list of themes.");
+                            channel.sendMessage("I am now removing **" + data.trivia[themeIndex].name + "** from the list of themes.");
                             removeTheme(themeIndex);
                             break;
 
@@ -84,31 +84,31 @@ exports.run = function(command, params, message) {
                                 themes += (themes.length > 0 ? "\n" : "") + "`[" + ++themeIndex + "]`" + " **" + theme.name + "**";
                             });
 
-                            message.channel.sendMessage(themes.length > 0 ? themes : "There are no theme entries yet.");
+                            channel.sendMessage(themes.length > 0 ? themes : "There are no theme entries yet.");
                             break;
 
                         default:
-                            message.channel.sendMessage("Incorrect parameters: `!trivia themes <add|remove|show>`");
+                            channel.sendMessage("Incorrect parameters: `!trivia themes <add|remove|show>`");
                             break;
                     }
                     break;
 
                 case "questions":
                     if(params.length < 2) {
-                        message.channel.sendMessage("Incorrect parameters: `!trivia questions <add|remove|show>`");
+                        channel.sendMessage("Incorrect parameters: `!trivia questions <add|remove|show>`");
                         break;
                     }
                     switch(params[1]) {
                         case "add":
                             if(params.length < 5) {
-                                message.channel.sendMessage("Incorrect parameters: `!trivia questions add \"<theme name>\" \"<question>\" \"<answer 1>\" \"[answer 2]\"`");
+                                channel.sendMessage("Incorrect parameters: `!trivia questions add \"<theme name>\" \"<question>\" \"<answer 1>\" \"[answer 2]\"`");
                                 break;
                             }
                             var _theme = params[2];
                             _theme = findTheme(_theme);
 
                             if(_theme == null) {
-                                message.channel.sendMessage("The **" + params[2] + "** trivia theme does not exist.");
+                                channel.sendMessage("The **" + params[2] + "** trivia theme does not exist.");
                                 break;
                             }
 
@@ -119,14 +119,14 @@ exports.run = function(command, params, message) {
 
                         case "remove":
                             if(params.length < 4) {
-                                message.channel.sendMessage("Incorrect parameters: `!trivia questions remove \"<theme name>\" <question index>`");
+                                channel.sendMessage("Incorrect parameters: `!trivia questions remove \"<theme name>\" <question index>`");
                                 break;
                             }
                             var _theme = params[2];
                             _theme = findTheme(_theme);
 
                             if(_theme == null) {
-                                message.channel.sendMessage("The **" + params[2] + "** trivia theme does not exist.");
+                                channel.sendMessage("The **" + params[2] + "** trivia theme does not exist.");
                                 break;
                             }
 
@@ -135,7 +135,7 @@ exports.run = function(command, params, message) {
 
                         case "show":
                             if(params[2] == null) {
-                                message.channel.sendMessage("Incorrect parameters: `!trivia questions show \"<theme name>\" [+|-]` + to show answers.");
+                                channel.sendMessage("Incorrect parameters: `!trivia questions show \"<theme name>\" [+|-]` + to show answers.");
                                 break;
                             }
 
@@ -148,7 +148,7 @@ exports.run = function(command, params, message) {
                             });
 
                             if(themeParam.name == null) {
-                                message.channel.sendMessage("I can't find **" + params[2] + "**.");
+                                channel.sendMessage("I can't find **" + params[2] + "**.");
                                 break;
                             }
 
@@ -159,17 +159,17 @@ exports.run = function(command, params, message) {
                                 questionsList += (questionsList.length > 0 ? "\n" : "") + "`[" + ++questionIndex + "]` **" + q.question + "**" + (showAnswers ? "\n" + getAnswers(q.answers) : "" );
                             });
 
-                            message.channel.sendMessage(themeParam.questions.length > 0 ? questionsList : "There are no questions for **" + params[2] + "**.");
+                            channel.sendMessage(themeParam.questions.length > 0 ? questionsList : "There are no questions for **" + params[2] + "**.");
                             break;
 
                         default:
-                            message.channel.sendMessage("Incorrect parameters: `!trivia questions <add|remove|show>`");
+                            channel.sendMessage("Incorrect parameters: `!trivia questions <add|remove|show>`");
                             break;
                     }
                     break;
 
                 default:
-                    message.channel.sendMessage("Incorrect parameters: `!trivia <themes|questions|play|answer>`");
+                    channel.sendMessage("Incorrect parameters: `!trivia <themes|questions|play|answer>`");
                     break;
             }
             break;
@@ -218,3 +218,5 @@ function getAnswers(triviaQuestion) {
     });
     return answersList;
 }
+
+exports.getData = function() { return JSON.stringify(data); }

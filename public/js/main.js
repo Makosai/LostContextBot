@@ -47,3 +47,76 @@ function createButton(name, link) {
 </div>
     `;
 }
+
+function initTriviaButtons() {
+    var htmlData = "";
+    var triviaText = document.getElementById("trivia");
+
+    for(var i = 0; i < triviaData.trivia.length; i++) {
+        // Themes List
+        triviaText.innerHTML += '<div class="triviaTheme">\n';
+        
+        // Theme Name
+        triviaText.innerHTML += '<div class="name">' + triviaData.trivia[i].name + '</div>\n';
+        
+        // Questions List
+        triviaText.innerHTML += '<div class="questions">\n'
+        
+        triviaData.trivia[i].questions.forEach(function(question) {
+            // Question Name
+            triviaText.innerHTML += '<div class="question">' + question.question + '</div>';
+            
+            // Answers List
+            triviaText.innerHTML += '<div class="answers">';
+            
+            question.answers.forEach(function(answer) {
+                // Answer Name
+                triviaText.innerHTML += '<div class="answer">' + answer + '</div>'; 
+            });
+            
+            triviaText.innerHTML += '</div>';
+        });
+        
+        triviaText.innerHTML += '</div>';
+        
+        triviaText.innerHTML += '</div>';
+        
+/*        htmlData += `
+<div class="triviaTheme">
+    <div class="name">` + triviaData.trivia[i].name + `</div>
+    <div class="questions>
+        ` + triviaData.trivia[i].questions.forEach(function(question) {
+            return `
+            <div class="question">` + question.question + `</div>
+            <div class="answers>
+                `+ question.answers.forEach(function(answer) {
+                return '<div class="answer">' + answer + '</div>'
+            }) + `
+            </div>
+`
+        }) + `
+    </div>
+</div>
+`; */
+    }
+}
+
+function getButtons() {
+    var htmlData = "";
+    
+    htmlData
+    
+}
+
+function getTrivias(data) {
+    
+    return data.trivia;
+}
+
+function getQuestions(trivia) {
+    return trivia.questions;
+}
+
+function getAnswers(question) {
+    return question.answers;
+}
