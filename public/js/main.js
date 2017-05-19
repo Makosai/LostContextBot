@@ -100,23 +100,3 @@ function initTriviaButtons() {
 `; */
     }
 }
-
-function getButtons() {
-    var htmlData = "";
-    
-    htmlData
-    
-}
-
-function getTrivias(data) {
-    
-    return data.trivia;
-}
-
-function getQuestions(trivia) {
-    return trivia.questions;
-}
-
-function getAnswers(question) {
-    return question.answers;
-}
